@@ -4,14 +4,15 @@
 <meta charset="UTF-8">
 <title>Dino Runner</title>
 <style>
-  body { margin:0; display:flex; justify-content:center; align-items:center; height:100vh; background:#f7f7f7; font-family:sans-serif; }
-  canvas { background:#fff; border-bottom:2px solid #535353; }
+  html, body { margin:0; height:100%; background:transparent; font-family:sans-serif; }
+  body { display:flex; justify-content:center; align-items:center; }
+  canvas { background:transparent; border-bottom:2px solid #535353; cursor:pointer; }
   #hint { position:fixed; bottom:20px; color:#777; font-size:14px; }
 </style>
 </head>
 <body>
 <canvas id="game" width="800" height="200"></canvas>
-<div id="hint">Space / ↑ : 점프 · 게임오버 후 Space로 재시작</div>
+<div id="hint">클릭하여 시작 · Space / ↑ / 클릭 : 점프</div>
 <script>
 const cv = document.getElementById('game');
 const ctx = cv.getContext('2d');
@@ -22,7 +23,7 @@ const MIN_SPEED = BASE_SPEED * 0.2 * 3; // 시작 속도 3배
 const MAX_SPEED = BASE_SPEED * 1.5;
 const RAMP_SECONDS = 1200; // 최저 속도 -> 최고 속도까지 20분
 
-let dino, obstacles, speed, score, best, running, gameOverFlag, spawnTimer, startTime;
+let dino, obstacles, speed, score, best, running, gameOverFlag, spawnTimer, startTime, hasStarted;
 
 function reset() {
   dino = { x:50, y:GROUND_Y-40, w:40, h:40, vy:0, jumping:false };
@@ -36,7 +37,13 @@ function reset() {
 }
 
 best = Number(localStorage.getItem('dinoBest') || 0);
-reset();
+hasStarted = false;
+running = false;
+dino = { x:50, y:GROUND_Y-40, w:40, h:40, vy:0, jumping:false };
+obstacles = [];
+score = 0;
+gameOverFlag = false;
+draw();
 
 function jump() {
   if (!dino.jumping && running) {
@@ -45,13 +52,23 @@ function jump() {
   }
 }
 
+function start() {
+  hasStarted = true;
+  reset();
+  requestAnimationFrame(loop);
+}
+
 document.addEventListener('keydown', e => {
+  if (!hasStarted) return;
   if (e.code === 'Space' || e.code === 'ArrowUp') {
     e.preventDefault();
     if (gameOverFlag) reset(); else jump();
   }
 });
-cv.addEventListener('mousedown', () => { if (gameOverFlag) reset(); else jump(); });
+cv.addEventListener('mousedown', () => {
+  if (!hasStarted) { start(); return; }
+  if (gameOverFlag) reset(); else jump();
+});
 
 function spawnObstacle() {
   const h = 30 + Math.random()*20;
@@ -166,12 +183,17 @@ function draw() {
   ctx.fillText('SCORE ' + Math.floor(score).toString().padStart(5,'0'), cv.width-180, 20);
   ctx.fillText('BEST ' + best.toString().padStart(5,'0'), cv.width-180, 40);
 
-  if (gameOverFlag) {
+  if (!hasStarted) {
+    ctx.textAlign = 'center';
+    ctx.font = '18px monospace';
+    ctx.fillText('클릭하여 플레이', cv.width/2, cv.height/2);
+    ctx.textAlign = 'left';
+  } else if (gameOverFlag) {
     ctx.textAlign = 'center';
     ctx.font = '24px monospace';
     ctx.fillText('GAME OVER', cv.width/2, cv.height/2);
     ctx.font = '14px monospace';
-    ctx.fillText('Space로 재시작', cv.width/2, cv.height/2+24);
+    ctx.fillText('클릭 또는 Space로 재시작', cv.width/2, cv.height/2+24);
     ctx.textAlign = 'left';
   }
 }
@@ -182,7 +204,6 @@ function loop(ts) {
   draw();
   requestAnimationFrame(loop);
 }
-requestAnimationFrame(loop);
 </script>
 </body>
 </html>
