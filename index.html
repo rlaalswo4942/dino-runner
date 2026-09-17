@@ -17,7 +17,7 @@ const cv = document.getElementById('game');
 const ctx = cv.getContext('2d');
 const GROUND_Y = 160;
 
-const BASE_SPEED = 1.5 * 1.5;
+const BASE_SPEED = 1.5 * 1.5 * 2.5;
 const MIN_SPEED = BASE_SPEED * 0.2;
 const MAX_SPEED = BASE_SPEED * 1.5;
 const RAMP_SECONDS = 1200; // 최저 속도 -> 최고 속도까지 20분
@@ -31,7 +31,7 @@ const MIN_JUMP_V = Math.sqrt(2 * GRAVITY * MIN_JUMP_HEIGHT); // 짧게 누를 �
 const BLOCK_W = 20, BLOCK_H = 30; // 기존 블럭 기준값
 const BLOCK_MAX = { w: BLOCK_W * 2.5, h: BLOCK_H * 2 };
 const BLOCK_MIN = { w: BLOCK_W, h: BLOCK_H * 0.5 };
-const MIN_GAP = (BLOCK_MAX.w + BLOCK_MIN.w) / 2; // 블럭 평균 가로 길이만큼 최소 간격 보장
+const MIN_GAP = BLOCK_MAX.w; // 큰 블럭 가로 길이만큼 최소 간격 보장
 
 let dino, obstacles, speed, score, best, running, gameOverFlag, spawnTimer, startTime;
 
