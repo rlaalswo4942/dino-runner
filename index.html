@@ -97,6 +97,50 @@ function update(elapsedSeconds) {
   score += 0.15;
 }
 
+function drawNinja(x, y, w, h, jumping) {
+  const legSwing = jumping ? 0.5 : Math.sin(performance.now() * 0.02) * 0.5;
+
+  ctx.save();
+  ctx.fillStyle = '#111';
+  ctx.translate(x + w/2, y + h/2);
+
+  ctx.save();
+  ctx.rotate(0.15);
+  ctx.fillRect(-w*0.18, -h*0.35, w*0.36, h*0.45);
+  ctx.restore();
+
+  ctx.beginPath();
+  ctx.arc(w*0.12, -h*0.38, w*0.16, 0, Math.PI*2);
+  ctx.fill();
+
+  ctx.beginPath();
+  ctx.moveTo(-w*0.02, -h*0.42);
+  ctx.lineTo(-w*0.35, -h*0.55);
+  ctx.lineTo(-w*0.2, -h*0.3);
+  ctx.closePath();
+  ctx.fill();
+
+  ctx.save();
+  ctx.translate(-w*0.05, h*0.05);
+  ctx.rotate(-legSwing - 0.3);
+  ctx.fillRect(-w*0.08, 0, w*0.16, h*0.5);
+  ctx.restore();
+
+  ctx.save();
+  ctx.translate(w*0.05, h*0.05);
+  ctx.rotate(legSwing + 0.3);
+  ctx.fillRect(-w*0.08, 0, w*0.16, h*0.5);
+  ctx.restore();
+
+  ctx.save();
+  ctx.translate(w*0.15, -h*0.1);
+  ctx.rotate(-legSwing*0.6 - 0.4);
+  ctx.fillRect(-w*0.06, 0, w*0.12, h*0.32);
+  ctx.restore();
+
+  ctx.restore();
+}
+
 function draw() {
   ctx.clearRect(0, 0, cv.width, cv.height);
 
@@ -106,8 +150,7 @@ function draw() {
   ctx.lineTo(cv.width, GROUND_Y);
   ctx.stroke();
 
-  ctx.fillStyle = '#535353';
-  ctx.fillRect(dino.x, dino.y, dino.w, dino.h);
+  drawNinja(dino.x, dino.y, dino.w, dino.h, dino.jumping);
 
   obstacles.forEach(o => ctx.fillRect(o.x, o.y, o.w, o.h));
 
